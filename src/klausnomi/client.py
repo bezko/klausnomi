@@ -45,7 +45,7 @@ class NomiClient:
                 "Authorization": self.api_key,
                 "Accept": "application/json",
             },
-            timeout=30.0,
+            timeout=120.0,
         )
     
     def _auth_header(self) -> dict[str, str]:
@@ -70,6 +70,10 @@ class NomiClient:
                 f"API request failed: {e.response.text}",
                 status_code=e.response.status_code,
             ) from e
+        
+        # Handle empty responses (e.g., DELETE requests)
+        if not response.content:
+            return {}
         
         result: dict[str, Any] = response.json()
         return result
@@ -184,7 +188,12 @@ class NomiClient:
         Returns:
             Created Room object.
         """
-        payload = {"name": name, "nomiUuids": nomi_uuids}
+        payload = {
+            "name": name,
+            "nomiUuids": nomi_uuids,
+            "backchannelingEnabled": False,
+            "note": "Created via KlausNomi CLI",
+        }
         data = await self._request(
             "POST",
             "/rooms",
@@ -260,7 +269,7 @@ class NomiClient:
         Returns:
             API response dict.
         """
-        payload = {"nomiId": nomi_uuid}
+        payload = {"nomiUuid": nomi_uuid}
         return await self._request(
             "POST",
             f"/rooms/{room_uuid}/chat/request",
