@@ -1,0 +1,62 @@
+Metadata-Version: 2.4
+Name: klausnomi
+Version: 0.1.0
+Summary: Python CLI for Nomi AI API integration
+Author-email: Klaus Nomi <klaus@nomi.ai>
+License: MIT
+Project-URL: Homepage, https://github.com/openclaw/klausnomi
+Project-URL: Repository, https://github.com/openclaw/klausnomi
+Project-URL: Issues, https://github.com/openclaw/klausnomi/issues
+Keywords: nomi,ai,api,cli,mcp
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: httpx>=0.25.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Dynamic: license-file
+
+# Nomi Plugin: Python Rewrite Roadmap
+
+## Implementation Strategy
+- Modular design aligned with AGENTS.md phases
+- Uses `argparse` for command parsing
+- Supports all existing Nomi/AI CLI verbs with arguments
+
+### Example Command
+```bash
+python main.py room create "Group Chat" --nomi-uuids uuid1 uuid2
+```
+
+Integrate Nomi AI agents into your OpenClaw workflows with full REST API support.
+
+## Installation
+```bash
+# Create structure
+mkdir -p ~/.openclaw/skills/skill_nomi/scripts
+
+# Install dependencies
+apt-get install -y bash jq curl
+
+# Setup credentials
+export NOMI_API_KEY=your_api_key_here
+export PATH="$HOME/.openclaw/skills/skill_nomi/scripts:$PATH"
+```
+
+## Core Features
+- Nomi list management
+- Direct 1-on-1 messaging
+- Group room communication
+- Avatar retrieval
+- Command syntax mirroring OpenClaw standards
