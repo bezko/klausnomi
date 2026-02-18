@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any, Sequence
+from typing import Any
 
 from klausnomi.client import NomiClient
 

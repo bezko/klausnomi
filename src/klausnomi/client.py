@@ -50,6 +50,8 @@ class NomiClient:
     
     def _auth_header(self) -> dict[str, str]:
         """Get authorization header."""
+        if self.api_key is None:
+            raise NomiAPIError("API key is not set")
         return {"Authorization": self.api_key}
     
     async def _request(
@@ -69,7 +71,8 @@ class NomiClient:
                 status_code=e.response.status_code,
             ) from e
         
-        return response.json()
+        result: dict[str, Any] = response.json()
+        return result
     
     # ============================
     # NOMI ENDPOINTS
