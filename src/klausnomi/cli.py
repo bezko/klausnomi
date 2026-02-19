@@ -75,16 +75,16 @@ async def handle_nomi_reply(client: NomiClient, args: argparse.Namespace) -> int
 
 async def handle_nomi_show(client: NomiClient, args: argparse.Namespace) -> int:
     """Handle 'nomi show' command."""
-    nomis = await client.list_nomis()
-    for nomi in nomis:
-        if nomi.uuid == args.uuid:
-            if args.json:
-                print(json.dumps(nomi.__dict__, indent=2))
-            else:
-                print(format_nomi(nomi))
-            return 0
-    print(f"❌ Nomi with UUID {args.uuid} not found", file=sys.stderr)
-    return 1
+    try:
+        nomi = await client.get_nomi(args.uuid)
+    except NomiAPIError as e:
+        print(f"❌ Nomi with UUID {args.uuid} not found: {e}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(nomi.__dict__, indent=2))
+    else:
+        print(format_nomi(nomi))
+    return 0
 
 
 async def handle_room_list(client: NomiClient, args: argparse.Namespace) -> int:

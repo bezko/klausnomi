@@ -118,6 +118,12 @@ class NomiClient:
             headers=self._auth_header(),
         )
         response.raise_for_status()
+        content_type = response.headers.get("Content-Type", "")
+        if "image/" not in content_type:
+            raise NomiAPIError(
+                f"Unexpected content type for avatar: {content_type}",
+                status_code=response.status_code,
+            )
         return response.content
     
     async def chat_with_nomi(self, uuid: str, message: str) -> ChatResponse:
@@ -178,12 +184,14 @@ class NomiClient:
         data = await self._request("GET", f"/rooms/{uuid}")
         return Room.from_dict(data)
     
-    async def create_room(self, name: str, nomi_uuids: list[str]) -> Room:
+    async def create_room(self, name: str, nomi_uuids: list[str], backchanneling_enabled: bool = False, note: str = "Created via KlausNomi CLI") -> Room:
         """Create a new room.
         
         Args:
             name: Room name.
             nomi_uuids: List of Nomi UUIDs to add to the room.
+            backchanneling_enabled: Whether backchanneling is enabled (default False).
+            note: Optional note for the room (default provided).
             
         Returns:
             Created Room object.
@@ -191,8 +199,8 @@ class NomiClient:
         payload = {
             "name": name,
             "nomiUuids": nomi_uuids,
-            "backchannelingEnabled": False,
-            "note": "Created via KlausNomi CLI",
+            "backchannelingEnabled": backchanneling_enabled,
+            "note": note,
         }
         data = await self._request(
             "POST",

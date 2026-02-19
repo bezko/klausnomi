@@ -17,3 +17,6 @@ poetry.lock
 
 # PDM
 pdm.lock
+
+.gemini/
+gha-creds-*.json

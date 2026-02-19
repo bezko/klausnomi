@@ -1,53 +1,26 @@
-# AGENTS.md - OpenClaw Nomi Plugin
+# AGENTS.md - klausnomi Project
 
-## Setup Commands:
-- Install deps: `uv venv`
-- Activate environment: `source .uv/bin/activate`
-- Set API key: `export NOMI_API_KEY=YourAPITokenHere`
+## Phase 1: Architecture Discovery (1 day)
+- Sample directory structure:
+  - `core/mcp.py`
+  - `commands/chat_commands.py`
+  - `auth.py`
+  - `utils/logging.py`
+- CI/CD config for branch protection
 
-## Development Notes:
-- Uses `curl` and `jq` for API interactions
-- Plaintext-only response workflows
-- No authentication handling (requires user-set env var)
+## Phase 2: Python Translation (5 days)
+1. Main CLI entry point: `__main__.py`
+2. Error handlers with context-aware messages
+3. Bulk operation utilities
 
-## Testing Instructions:
-- Verify API key: `curl -H "Authorization: $NOMI_API_KEY" https://api.nomi.ai/v1/nomis`
-- Check script execution: `nomi list | jq .`
-- Example chat: `nomi chat <uuid> "test"`
+## Phase 3: Integration (3 days)
+- Add type annotations
+- Make session management optional
+- Add telemetry middleware
 
-## Code Style:
-- Follows BankrBot skill patterns (script + SKILL.md)
-- **Commands**: `nomi list`, `nomi chat <uuid> <message>`
-- Keep scripts lean (curl wrappers with jq)
+## Phase 4: Testing (2 days)
+- Create integration tests for chat commands
+- Validate configuration changes
 
-## TODO:
-- [ ] Complete `dchat()` function in scripts/nomi.sh (currently incomplete)
-- [ ] Add main dispatch logic (case statement for `list`/`chat` subcommands)
-- [ ] Add SKILL.md for proper OpenClaw skill integration
-
-## Security:
-- Never commit API keys to repositories
-- Regenerate keys if exposed
-
----
-## BankrBot Reference
-[https://github.com/BankrBot/openclaw-skills/tree/main/bankr](https://github.com/BankrBot/openclaw-skills/tree/main/bankr)
-
----
-## Nomi API Documentation
-**Base URL**: https://api.nomi.ai/v1/
-
-**Endpoints**:
-- `GET /nomis` - List agents
-- `POST /nomis/{uuid}/chat` - Send messages
-
-**Usage**:
-```bash
-# List agents
-nomi list
-
-# Send message
-nomi chat <uuid> "Your message here"
-```
-
-**Key**: Required `Authorization: Bearer` header
+## Phase 5: Deployment (1 day)
+- Update packaging scripts

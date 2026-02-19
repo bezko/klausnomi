@@ -10,15 +10,18 @@ Python CLI for Nomi AI API integration with MCP (Model Context Protocol) support
 pip install klausnomi
 ```
 
-### From source
+### From source (using uv)
 
 ```bash
 git clone https://github.com/openclaw/klausnomi.git
 cd klausnomi
-python -m venv venv
+uv venv venv   # create a virtual environment with uv
 source venv/bin/activate
-pip install -e .
+uv pip install -e .   # install the package and its dependencies using uv
 ```
+
+# Optional: If you have a uv lock file, you can sync directly:
+# uv sync
 
 ## Configuration
 
@@ -49,7 +52,7 @@ nomi chat d4c41601-6ee9-4b92-8d9a-f3a4ab3c2763 "Hello there!"
 # Send message and get just the reply text
 nomi reply d4c41601-6ee9-4b92-8d9a-f3a4ab3c2763 "How are you today?"
 
-# Download a Nomi's avatar
+# Download a Nomi's avatar (checks that the response is an image)
 nomi avatar d4c41601-6ee9-4b92-8d9a-f3a4ab3c2763
 nomi avatar d4c41601-6ee9-4b92-8d9a-f3a4ab3c2763 custom-name.webp
 ```
@@ -111,10 +114,12 @@ async def main():
         )
         print(response.reply_message.text)
         
-        # Create a room
+        # Create a room (now allows optional backchanneling and note)
         room = await client.create_room(
             "My Group",
-            ["nomi-uuid-1", "nomi-uuid-2"]
+            ["nomi-uuid-1", "nomi-uuid-2"],
+            backchanneling_enabled=False,
+            note="Created via KlausNomi CLI",
         )
         print(f"Created room: {room.uuid}")
         
@@ -126,13 +131,13 @@ asyncio.run(main())
 
 ### MCP Server Integration
 
-KlausNomi includes MCP (Model Context Protocol) integration for use with AI assistants:
+KlausNomi includes MCP (Model Context Protocol) integration for use with AI assistants. **Note:** the MCP server implementation is still a TODO placeholder – see `src/klausnomi/mcp.py` for details.
 
 ```python
 from klausnomi import NomiClient
 from klausnomi.mcp import NomiMCPServer
 
-# Start the MCP server
+# Start the MCP server (currently a stub)
 server = NomiMCPServer()
 server.run()
 ```
@@ -180,16 +185,9 @@ klausnomi/
 └── README.md                 # This file
 ```
 
-## Migration from Bash
+## Contributing
 
-The original `nomi.sh` script has been fully replaced. The Python version maintains CLI compatibility while adding:
-
-- Async/await support for better performance
-- Type hints throughout
-- Comprehensive test coverage
-- JSON output option
-- Python API for programmatic use
-- MCP server support (coming soon)
+We welcome contributions! Please see the `CONTRIBUTING.md` file for guidelines on setting up a development environment, running tests, and submitting pull requests.
 
 ## License
 

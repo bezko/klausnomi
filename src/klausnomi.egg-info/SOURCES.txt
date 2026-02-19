@@ -5,6 +5,7 @@ src/klausnomi/__init__.py
 src/klausnomi/__main__.py
 src/klausnomi/cli.py
 src/klausnomi/client.py
+src/klausnomi/mcp.py
 src/klausnomi/models.py
 src/klausnomi.egg-info/PKG-INFO
 src/klausnomi.egg-info/SOURCES.txt

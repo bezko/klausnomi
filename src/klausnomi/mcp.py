@@ -133,17 +133,66 @@ class NomiMCPServer:
             else:
                 raise ValueError(f"Unknown tool: {name}")
     
-    def run(self) -> None:
-        """Run the MCP server (placeholder).
+    async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+        """Handle an incoming MCP request.
         
-        TODO: Implement full MCP server when mcporter is available.
+        Expected request format (JSON):
+        {
+            "method": "list_tools" | "call_tool",
+            "params": {
+                "name": "tool_name",               # for call_tool
+                "arguments": { ... }               # for call_tool
+            }
+        }
         """
-        print("MCP server not yet implemented.")
-        print("Waiting for mcporter package to be available on PyPI.")
-        print("\nAvailable tools:")
-        tools = asyncio.run(self.handle_list_tools())
-        for tool in tools:
-            print(f"  - {tool['name']}: {tool['description']}")
+        data = await reader.read(8192)
+        if not data:
+            writer.close()
+            await writer.wait_closed()
+            return
+        try:
+            request = json.loads(data.decode())
+            method = request.get("method")
+            if method == "list_tools":
+                result = await self.handle_list_tools()
+                response = {"result": result}
+            elif method == "call_tool":
+                params = request.get("params", {})
+                name = params.get("name")
+                arguments = params.get("arguments", {})
+                result = await self.handle_call_tool(name, arguments)
+                response = {"result": result}
+            else:
+                response = {"error": f"Unknown method: {method}"}
+        except Exception as e:
+            response = {"error": str(e)}
+        writer.write(json.dumps(response).encode())
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+
+    def run(self) -> None:
+        """Run a minimal TCP MCP server.
+        
+        The server listens on localhost:8000 and accepts JSON-encoded requests.
+        Supported methods:
+        - "list_tools" → returns the list of tool definitions.
+        - "call_tool" with params {"name": "tool_name", "arguments": {...}} → invokes the tool.
+        """
+        async def _serve():
+            server = await asyncio.start_server(
+                self._handle_client,
+                host="127.0.0.1",
+                port=8000,
+            )
+            addrs = ", ".join(str(sock.getsockname()) for sock in server.sockets)
+            print(f"MCP server listening on {addrs}")
+            async with server:
+                await server.serve_forever()
+        try:
+            asyncio.run(_serve())
+        except KeyboardInterrupt:
+            print("\nMCP server stopped by user")
 
 
 if __name__ == "__main__":
